@@ -1,5 +1,5 @@
 """
-URL configuration for BookStore project.
+URL configuration for ToDoMany project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -15,8 +15,48 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
+from rest_framework_simplejwt.views import (
+    TokenRefreshView,
+    TokenVerifyView,
+    TokenObtainPairView
+)
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Your API",
+        default_version='v1',
+        description="API description",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="contact@yourdomain.com"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        print("He")
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            print("Token generated successfully:", response.data)
+        else:
+            print("Token generation failed:", response.data)
+        return response
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('bookstore/', include('bookstore.urls')),
+    path('auth/sign-up/', create_user, name='sign-up'),
+    path('auth/sign-in/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/token/verify/', TokenVerifyView.as_view(), name='verify_refresh'),
+    path('api/', include(router.urls)),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
