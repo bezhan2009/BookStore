@@ -1,6 +1,4 @@
 from django.shortcuts import get_object_or_404
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,24 +6,15 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
 from MainSource.models import Book, UserProfile, ShoppingCart, Order, Review
-from MainSource.api.serializers import BookSerializer, UserProfileSerializer, \
-    ShoppingCartSerializer, OrderSerializer, ReviewSerializer, UserSerializer
-
+from MainSource.api.serializers import BookSerializer, \
+    ShoppingCartSerializer, OrderSerializer, ReviewSerializer, UserProfileSerializer
+from utils.tokens import get_user
+from userapp.views import UserProfileView
 import logging
 
 
-logger = logging.getLogger('django')
-
-
-@api_view(["POST"])
-def create_user(request):
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+logger = logging.getLogger('MainSource.views')
 
 
 class BookView(APIView):
@@ -60,20 +49,22 @@ class BookView(APIView):
     def delete(self, request, book_id):
         book = get_object_or_404(Book, pk=book_id)
         book.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_200_OK)
 
 
 class UserProfileView(APIView):
     authentication_classes = [JWTAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, user_id):
-        profile = get_object_or_404(UserProfile, user_id=user_id)
+    def get(self, request):
+        user = get_user(request)
+        profile = get_object_or_404(UserProfile, user_id=user.id)
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
 
-    def put(self, request, user_id):
-        profile = get_object_or_404(UserProfile, user_id=user_id)
+    def put(self, request):
+        user = get_user(request)
+        profile = get_object_or_404(UserProfile, user_id=user.id)
         serializer = UserProfileSerializer(profile, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -85,15 +76,17 @@ class ShoppingCartView(APIView):
     authentication_classes = [JWTAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, user_id):
-        cart_items = ShoppingCart.objects.filter(user_id=user_id)
+    def get(self, request):
+        user = get_user(request)
+        cart_items = ShoppingCart.objects.filter(user_id=user.id)
         serializer = ShoppingCartSerializer(cart_items, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        user = get_user(request)
         serializer = ShoppingCartSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -107,15 +100,17 @@ class OrderView(APIView):
     authentication_classes = [JWTAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, user_id):
-        orders = Order.objects.filter(user_id=user_id)
+    def get(self, request):
+        user = get_user(request)
+        orders = Order.objects.filter(user_id=user.id)
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        user = get_user(request)
         serializer = OrderSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -125,9 +120,10 @@ class ReviewView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        user = get_user(request)
         serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -140,6 +136,7 @@ class ReviewView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, review_id):
-        review = get_object_or_404(Review, pk=review_id)
+        user = get_user(request)
+        review = get_object_or_404(Review, pk=review_id, user=user)
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
