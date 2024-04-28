@@ -18,6 +18,9 @@ INSTALLED_APPS = [
     'MainSource',
     'userapp',
     'bookapp',
+    'reviewapp',
+    'orderapp',
+    'shoppingapp',
 ]
 
 MIDDLEWARE = [

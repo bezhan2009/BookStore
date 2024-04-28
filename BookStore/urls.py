@@ -51,13 +51,16 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('bookstore/', include('BookStore.urls')),
+    path('admin/', admin.site.urls),
+    path('auth/', include('userapp.urls')),
     path('auth/sign-in/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/token/verify/', TokenVerifyView.as_view(), name='verify_refresh'),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 
-    path('user/', include('userapp.urls')),
-    path('book/', include('bookapp.urls')),
+    path('api/book/', include('bookapp.urls')),
+    path('api/review/', include('reviewapp.urls')),
+    path('api/order/', include('orderapp.urls')),
+    path('api/shop/', include('shoppingapp.urls'))
 ]
