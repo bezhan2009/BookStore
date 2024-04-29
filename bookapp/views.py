@@ -5,10 +5,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from MainSource.models import Book
-from MainSource.api.serializers import BookSerializer
+from .models import Book
+from .serializers import BookSerializer
 import logging
-
 
 logger = logging.getLogger('bookapp.views')
 

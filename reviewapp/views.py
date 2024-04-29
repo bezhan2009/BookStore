@@ -3,19 +3,24 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from utils.tokens import get_user
 from .models import Review
 from .serializers import ReviewSerializer
+from utils.tokens import get_user_id_from_token
+from userapp.models import UserProfile
 import logging
-
 
 logger = logging.getLogger('reviewapp.views')
 
 
+def get_user(request):
+    user_id = get_user_id_from_token(request)
+    user = UserProfile.objects.get(id=user_id)
+    return user
+
+
 class ReviewView(APIView):
-    authentication_classes = [JWTAuthentication, SessionAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
