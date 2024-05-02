@@ -51,7 +51,6 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 
 urlpatterns = [
-    path('bookstore/', include('BookStore.urls')),
     path('admin/', admin.site.urls),
     path('auth/', include('userapp.urls')),
     path('auth/sign-in/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

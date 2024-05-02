@@ -1,22 +1,25 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import Order
+from .models import Order  # Импорт модели внутри функции представления
 from .serializers import OrderSerializer
-from utils.tokens import get_user
+from utils.tokens import get_user_id_from_token
+from userapp.models import UserProfile
 import logging
-
 
 logger = logging.getLogger('orderapp.views')
 
 
+def get_user(request):
+    user_id = get_user_id_from_token(request)
+    user = UserProfile.objects.get(id=user_id)
+    return user
+
+
 class OrderView(APIView):
-    authentication_classes = [JWTAuthentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request):
         user = get_user(request)
@@ -47,4 +50,3 @@ class OrderDetail(APIView):
         return Response(
                 data={'message': f'Order with id {order_pk} has been removed successfully'},
                 status=status.HTTP_200_OK)
-

@@ -1,6 +1,5 @@
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import AccessToken
-from userapp.models import UserProfile
 
 
 def get_user_id_from_token(request):
@@ -11,12 +10,6 @@ def get_user_id_from_token(request):
             user_id = access_token['user_id']
             return user_id
         else:
-            return
+            return False
     except (AuthenticationFailed, IndexError):
-        return
-
-
-def get_user(request):
-    user_id = get_user_id_from_token(request)
-    user = UserProfile.objects.get(id=user_id)
-    return user
+        return False

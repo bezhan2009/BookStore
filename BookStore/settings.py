@@ -15,7 +15,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'MainSource',
     'userapp',
     'bookapp',
     'reviewapp',
@@ -57,9 +56,9 @@ WSGI_APPLICATION = 'BookStore.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bookstore_db',
-        'USER': 'behzod',
-        'PASSWORD': 'behzod',
+        'NAME': 'bookstoremaindb',
+        'USER': 'postgres',
+        'PASSWORD': 'bezhan2009',
         'HOST': 'localhost',
         'PORT': '5432',
     }

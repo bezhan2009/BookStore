@@ -7,8 +7,7 @@ from drf_yasg.utils import swagger_auto_schema
 from .serializers import UserProfileSerializer
 import logging
 
-
-logger = logging.getLogger('django')
+logger = logging.getLogger('userapp.views')
 
 
 class UserProfileView(APIView):
@@ -23,16 +22,6 @@ class UserProfileView(APIView):
         }
     ))
     def post(self, request):
-        """
-                Создает нового пользователя.
-
-                Свойства для создания нового пользователя:
-                - username: Имя пользователя
-                - password: Пароль
-                - address: Address пользователя
-                - email: Email пользователя
-                - phone_number: Телефонный номер пользователя
-                """
         data = {
             'username': request.data['username'],
             'password': request.data['password'],
