@@ -41,7 +41,6 @@ schema_view = get_schema_view(
 
 class MyTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
-        print("He")
         response = super().post(request, *args, **kwargs)
         if response.status_code == 200:
             print("Token generated successfully:", response.data)
