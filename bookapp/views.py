@@ -46,4 +46,4 @@ class BookDetailView(APIView):
     def delete(self, request, book_id):
         book = get_object_or_404(Book, pk=book_id)
         book.delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response({"message": "book has been successfully removed."}, status=status.HTTP_200_OK)
