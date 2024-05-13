@@ -45,4 +45,4 @@ class ReviewDetail(APIView):
         user = get_user(request)
         review = get_object_or_404(Review, pk=review_id, user=user)
         review.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Review has been successfully removed."}, status=status.HTTP_200_OK)

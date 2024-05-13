@@ -42,4 +42,4 @@ class ShoppingCartDetailView(APIView):
     def delete(self, request, item_id):
         item = get_object_or_404(ShoppingCart, pk=item_id)
         item.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "ShopppingCart has been successfully removed."},status=status.HTTP_200_OK)
